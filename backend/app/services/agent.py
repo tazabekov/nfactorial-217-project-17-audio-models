@@ -3,18 +3,22 @@
 This is the backend's default wiring for Step 3 (see project README). The
 teammate owning the agent/MCP work can extend ``VoiceAgent`` (e.g. add more
 MCP servers, a custom prompt, or site-specific tools) without touching the
-HTTP layer -- the orchestrator only calls ``VoiceAgent.ask``.
+HTTP layer -- the orchestrator only calls the agent's ``ask`` method.
 
 If MCP tools fail to load (e.g. Playwright MCP isn't installed locally yet),
 the agent degrades gracefully to a plain LLM so the rest of the pipeline
 (ASR -> agent -> TTS) still works end to end during development.
 """
 import logging
+import sys
 from functools import lru_cache
+from pathlib import Path
 
 from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class VoiceAgent:
@@ -95,6 +99,33 @@ class VoiceAgent:
                 await result
 
 
+class KassiyetMCPAgent:
+    """Wraps Kassiyet's standalone ``agent/`` package (repo root) -- a
+    LangChain ReAct agent that opens a real Playwright-controlled browser
+    against sxodim.com / ticketon.kz / kino.kz. Each call opens a fresh MCP
+    session (see ``agent/agent.py``), so it doesn't need the
+    lazy-init/fallback dance ``VoiceAgent`` does for the built-in provider.
+    """
+
+    def __init__(self):
+        if str(REPO_ROOT) not in sys.path:
+            sys.path.insert(0, str(REPO_ROOT))
+
+    async def ask(self, user_text: str, history: list[dict] | None = None) -> str:
+        from agent import get_agent_response
+
+        return await get_agent_response(user_text)
+
+    async def aclose(self) -> None:
+        pass
+
+
+def _build_agent(settings: Settings):
+    if settings.agent_backend == "kassiyet_mcp":
+        return KassiyetMCPAgent()
+    return VoiceAgent(settings)
+
+
 @lru_cache
-def get_voice_agent() -> VoiceAgent:
-    return VoiceAgent(get_settings())
+def get_voice_agent():
+    return _build_agent(get_settings())

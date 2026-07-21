@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 node_modules/
 agent/.playwright-mcp/
+.playwright-mcp/
+backend/.playwright-mcp/

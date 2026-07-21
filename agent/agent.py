@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langgraph.prebuilt import create_react_agent
-from prompts import SYSTEM_PROMPT
+from .prompts import SYSTEM_PROMPT
 
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
