@@ -3,24 +3,29 @@ import sys
 import os
 
 sys.stdout.reconfigure(encoding="utf-8")
+sys.stdin.reconfigure(encoding="utf-8")
 sys.path.insert(0, os.path.dirname(__file__))
 
 from agent import get_agent_response
 
 
 async def main():
-    queries = [
-        "Что делать сегодня вечером в Алмате?",
-        "Есть ли концерты или стендапы на этой неделе?",
-        "What movies are playing in Almaty tonight?",
-    ]
+    print("=== Voice Assistant Agent Test ===")
+    print("Задавай вопросы про события в Алмате. Введи 'выход' для завершения.")
+    print("=" * 40)
 
-    for query in queries:
-        print(f"\nЗапрос: {query}")
-        print("-" * 60)
+    while True:
+        print()
+        query = input("Твой вопрос: ").strip()
+        if query.lower() in ("выход", "exit", "quit", "q"):
+            print("Пока!")
+            break
+        if not query:
+            continue
+
+        print("Думаю...")
         response = await get_agent_response(query)
-        print(f"Ответ: {response}")
-        print("=" * 60)
+        print(f"\nОтвет: {response}")
 
 
 if __name__ == "__main__":
