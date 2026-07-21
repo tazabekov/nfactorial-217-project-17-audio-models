@@ -10,10 +10,11 @@ const ICONS: Record<AssistantState, string> = {
   recording: '🔴',
   thinking: '⏳',
   speaking: '🔊',
+  error: '⚠️',
 };
 
 export function MicButton({ state, onClick }: MicButtonProps) {
-  const disabled = state !== 'idle';
+  const disabled = state === 'thinking' || state === 'speaking';
 
   return (
     <button
