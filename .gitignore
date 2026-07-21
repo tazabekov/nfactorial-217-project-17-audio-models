@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+demo_output/
+*.mp3
+.DS_Store
