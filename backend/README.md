@@ -12,6 +12,23 @@ This is the **Step 4 (Backend)** piece of the group project (see the root
 built by teammates — the backend defines small provider interfaces so each
 piece can be swapped in independently.
 
+## Что сделано
+
+- Создал папку `backend/` с FastAPI-сервером, оркестрирующим весь пайплайн:
+  audio → ASR → LangChain-агент (MCP Playwright tools) → TTS → audio.
+- Эндпоинты: `POST /api/chat/audio` (полный голосовой круг),
+  `POST /api/chat/text` (для теста без микрофона), `GET /api/health`,
+  `WS /ws/asr` (бонус — real-time ASR стриминг).
+- ASR и TTS сделаны как переключаемые провайдеры
+  (`ASR_PROVIDER=openai|faster_whisper`, `TTS_PROVIDER=elevenlabs|openai`)
+  через `.env`, чтобы Gizzat и Madina могли подключить свои модели, не трогая
+  остальной код.
+- Агент — LangGraph react-agent, подключается к MCP Playwright серверу
+  (stdio), с graceful fallback на обычный LLM, если MCP ещё не поднят — так
+  Kassiyet сможет доделать свою часть независимо.
+- Написал `backend/README.md` с инструкцией запуска, `.env.example`,
+  `Dockerfile`, тесты (`pytest` — 2/2 прошли), `requirements.txt`.
+
 ## Layout
 
 ```
