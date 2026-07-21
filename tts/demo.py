@@ -1,13 +1,13 @@
 """
 Quick demo — run this to test TTS without starting the server.
-Usage: python demo.py
+Usage: python -m tts.demo
 """
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from tts.service import synthesize_to_file, VOICES
+from .service import synthesize_to_file, VOICES
 
 SAMPLE_TEXTS = [
     "Сегодня вечером в Алматы есть отличный стендап на улице Абая в 19:00 и джазовый концерт в 20:00. Что предпочитаете?",

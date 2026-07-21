@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from tts.router import router as tts_router
+from .router import router as tts_router
 
 app = FastAPI(
     title="Voice AI Assistant — TTS Service",
