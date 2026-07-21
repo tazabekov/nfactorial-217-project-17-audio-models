@@ -1,8 +1,18 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+load_dotenv()
+
+_client = None
+
+
+def get_client() -> OpenAI:
+    global _client
+    if _client is None:
+        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    return _client
 
 VOICES = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 DEFAULT_VOICE = "nova"
@@ -26,7 +36,7 @@ def synthesize(
     if voice not in VOICES:
         voice = DEFAULT_VOICE
 
-    response = client.audio.speech.create(
+    response = get_client().audio.speech.create(
         model=MODEL,
         voice=voice,
         input=text,
@@ -58,7 +68,7 @@ def synthesize_stream(
     if voice not in VOICES:
         voice = DEFAULT_VOICE
 
-    with client.audio.speech.with_streaming_response.create(
+    with get_client().audio.speech.with_streaming_response.create(
         model=MODEL,
         voice=voice,
         input=text,
