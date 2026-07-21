@@ -36,17 +36,50 @@ tickets, checks event/movie/exhibition schedules, and suggests options.
    *"Tonight there's a great stand-up show on Abay street at 19:00 and a jazz
    concert at 20:00. Which one would you like?"*
 
-```
-Voice AI Assistant - Pipeline
-End-to-end flow: Voice In -> AI -> Voice Out
+```mermaid
+flowchart LR
+    subgraph FE["Frontend (UI)"]
+        direction TB
+        User(("User"))
+        Mic["Microphone"]
+        Speaker["Speaker"]
+        ChatUI["Chat UI (text)"]
+        User -- voice --> Mic
+    end
 
-Frontend (UI)              Backend (Server)              External (Web)
-User -> Microphone -> audio -> ASR (Whisper) -> text
-                                -> LangChain Agent + LLM -- MCP --> MCP Playwright (Browser)
-                                                        <-- events --      |
-                                answer <- TTS (ElevenLabs)                v
-Speaker <- audio <-------------------                    sxodim.com / ticketon.kz / kino.kz
-Chat UI (text) <-------------------
+    subgraph BE["Backend (Server)"]
+        direction TB
+        ASR["ASR (Whisper)"]
+        Agent["LangChain Agent + LLM"]
+        TTS["TTS (ElevenLabs)"]
+        ASR -- text --> Agent
+        Agent -- answer --> TTS
+    end
+
+    subgraph EXT["External (Web)"]
+        direction TB
+        MCPTool["MCP Playwright (Browser)"]
+        Sxodim["sxodim.com"]
+        Ticketon["ticketon.kz"]
+        Kino["kino.kz"]
+        MCPTool --> Sxodim
+        MCPTool --> Ticketon
+        MCPTool --> Kino
+    end
+
+    Mic -- audio --> ASR
+    Agent -- MCP --> MCPTool
+    MCPTool -- events --> Agent
+    TTS -- audio --> Speaker
+    TTS -.-> ChatUI
+
+    classDef frontend fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a;
+    classDef backend fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95;
+    classDef external fill:#dcfce7,stroke:#22c55e,color:#14532d;
+
+    class User,Mic,Speaker,ChatUI frontend;
+    class ASR,Agent,TTS backend;
+    class MCPTool,Sxodim,Ticketon,Kino external;
 ```
 
 ## 👥 Team & assignments
