@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { AssistantState, ChatMessage } from '../types';
 
 const FAKE_EXCHANGE = {
@@ -19,30 +19,30 @@ interface UseVoiceAssistantResult {
 export function useVoiceAssistant(): UseVoiceAssistantResult {
   const [state, setState] = useState<AssistantState>('idle');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const stateRef = useRef<AssistantState>(state);
+  stateRef.current = state;
 
   const start = useCallback(() => {
-    setState((current) => {
-      if (current !== 'idle') return current;
+    if (stateRef.current !== 'idle') return;
+
+    setState('recording');
+
+    setTimeout(() => {
+      setState('thinking');
 
       setTimeout(() => {
-        setState('thinking');
+        setMessages((prev) => [
+          ...prev,
+          { id: `${Date.now()}-user`, role: 'user', text: FAKE_EXCHANGE.user },
+          { id: `${Date.now()}-assistant`, role: 'assistant', text: FAKE_EXCHANGE.assistant },
+        ]);
+        setState('speaking');
 
         setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            { id: `${Date.now()}-user`, role: 'user', text: FAKE_EXCHANGE.user },
-            { id: `${Date.now()}-assistant`, role: 'assistant', text: FAKE_EXCHANGE.assistant },
-          ]);
-          setState('speaking');
-
-          setTimeout(() => {
-            setState('idle');
-          }, SPEAKING_MS);
-        }, THINKING_MS);
-      }, RECORDING_MS);
-
-      return 'recording';
-    });
+          setState('idle');
+        }, SPEAKING_MS);
+      }, THINKING_MS);
+    }, RECORDING_MS);
   }, []);
 
   return { state, messages, start };
