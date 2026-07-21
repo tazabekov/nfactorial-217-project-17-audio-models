@@ -67,6 +67,8 @@ flowchart LR
         MCPTool --> Kino
     end
 
+    FE ~~~ BE ~~~ EXT
+
     Mic -- audio --> ASR
     Agent -- MCP --> MCPTool
     MCPTool -- events --> Agent
