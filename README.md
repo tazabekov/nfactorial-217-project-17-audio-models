@@ -54,7 +54,7 @@ Chat UI (text) <-------------------
 | Step | Area | Owner |
 |------|------|-------|
 | 1 | ASR / STT | Gizzat |
-| 2 | TTS | Madia |
+| 2 | TTS | Madina |
 | 3 | MCP Playwright (web data retrieval) | Kassiyet |
 | 4 | Backend | Kenzhe |
 | 4 | Frontend | Gizzat |
