@@ -25,12 +25,20 @@ class Settings(BaseSettings):
     faster_whisper_compute_type: str = "int8"
 
     # --- TTS (text-to-speech) ---
-    tts_provider: str = "elevenlabs"  # "elevenlabs" | "openai"
+    tts_provider: str = "elevenlabs"  # "elevenlabs" | "openai" | "madina_service"
     elevenlabs_api_key: str | None = None
     elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"
     elevenlabs_model_id: str = "eleven_multilingual_v2"
     openai_tts_model: str = "tts-1"
     openai_tts_voice: str = "alloy"
+    # madina_service: calls the standalone TTS service in ../tts (run separately)
+    madina_tts_url: str = "http://localhost:8001"
+    madina_tts_voice: str = "nova"
+
+    # --- Agent backend (Step 3) ---
+    # "builtin": VoiceAgent below (lazy MCP client, graceful no-tools fallback)
+    # "kassiyet_mcp": Kassiyet's standalone agent/ package (repo root)
+    agent_backend: str = "builtin"
 
     # --- MCP Playwright (web search tool for the agent) ---
     mcp_playwright_command: str = "npx"

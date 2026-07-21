@@ -76,6 +76,26 @@ class OpenAITTS(TTSService):
         return response.read()
 
 
+class MadinaTTSService(TTSService):
+    """Calls Madina's standalone TTS microservice (tts/ at the repo root,
+    gpt-4o-mini-tts) over HTTP instead of re-implementing it here."""
+
+    def __init__(self, base_url: str, voice: str):
+        self._base_url = base_url.rstrip("/")
+        self._voice = voice
+
+    async def synthesize(self, text: str) -> bytes:
+        import httpx
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{self._base_url}/tts/synthesize",
+                json={"text": text, "voice": self._voice, "stream": False},
+            )
+            response.raise_for_status()
+            return response.content
+
+
 def _build_tts_service(settings: Settings) -> TTSService:
     if settings.tts_provider == "elevenlabs":
         return ElevenLabsTTS(
@@ -88,6 +108,11 @@ def _build_tts_service(settings: Settings) -> TTSService:
             api_key=settings.openai_api_key,
             model=settings.openai_tts_model,
             voice=settings.openai_tts_voice,
+        )
+    if settings.tts_provider == "madina_service":
+        return MadinaTTSService(
+            base_url=settings.madina_tts_url,
+            voice=settings.madina_tts_voice,
         )
     raise ValueError(f"Unknown TTS provider: {settings.tts_provider}")
 

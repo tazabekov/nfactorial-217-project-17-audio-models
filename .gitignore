@@ -6,3 +6,5 @@ node_modules/
 agent/.playwright-mcp/
 demo_output/
 *.mp3
+.playwright-mcp/
+backend/.playwright-mcp/
